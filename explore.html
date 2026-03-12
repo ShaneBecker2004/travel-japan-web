@@ -44,50 +44,73 @@
         </div>
         </nav>
         
-        <main>
-            <h3> Welcome to Nippon Navigator!</h3>
-        </main>
+    <main>
+        <h1>Explore The World of Japan</h1>
+        <p>Discover what calls to you across Japan:</p>
+    </main>
 
-        <div class="card">
-            <img src="img_avatar.png" alt="Avatar" style="width:100%">
-                <div class="container">
-                    <h4><b>Tokyo</b></h4>
-                    <p>Things to do in Tokyo</p>
-            </div>
-        </div>
-
-        <div class="card">
-            <img src="img_avatar.png" alt="Avatar" style="width:100%">
-                <div class="container">
-                    <h4><b>Osaka</b></h4>
-                    <p>Things to do in Tokyo</p>
-            </div>
-        </div>
-
-        <div class="card">
-            <img src="img_avatar.png" alt="Avatar" style="width:100%">
-                <div class="container">
-                    <h4><b>Osaka</b></h4>
-                    <p>Things to do in Tokyo</p>
-            </div>
-        </div>
-
-        <div class="card">
-            <img src="img_avatar.png" alt="Avatar" style="width:100%">
-                <div class="container">
-                    <h4><b>Osaka</b></h4>
-                    <p>Things to do in Tokyo</p>
-            </div>
-        </div>
-
+    <div class="filter-container">
+        <label for="categoryFilter">Filter by Type:</label>
+        <select id="categoryFilter">
+            <option value="all">All</option>
+            <option value="Attraction">Attractions</option>
+            <option value="Restaurant">Restaurants</option>
+            <option value="Event">Events</option>
+        </select>
     </div>
-   
-    <script src="backend/server.js"></script>
 
+    <div id="explore-container" class="card-container"></div>
 
+    <script>
+    let attractions = [];
 
-    </body>        
-        <footer class="footer">
-            Test
-        </footer>
+    async function loadAttractions() {
+        try {
+            const res = await fetch("attractions.json");
+            attractions = await res.json();
+
+            renderAttractions(attractions);
+        } catch (err) {
+            console.error("Error loading attractions:", err);
+        }
+    }
+
+    function renderAttractions(list) {
+        const container = document.getElementById("explore-container");
+        container.innerHTML = "";
+
+        list.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "card";
+
+            card.innerHTML = `
+                <img src="${item.image}" alt="${item.name}" style="width:100%">
+                <div class="container">
+                    <h4><b>${item.name}</b></h4>
+                    <p>${item.category} in ${item.city}</p>
+                    <p>${item.description || ""}</p>
+                    <p><strong>Location:</strong> ${item.location || ""}</p>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+    }
+
+    // Filter functionality
+    document.getElementById("categoryFilter").addEventListener("change", function() {
+        const category = this.value;
+        if (category === "all") {
+            renderAttractions(attractions);
+        } else {
+            const filtered = attractions.filter(a => a.category === category);
+            renderAttractions(filtered);
+        }
+    });
+
+    loadAttractions();
+    </script>
+
+    <footer class="footer">Test</footer>
+</body>
 </html>
